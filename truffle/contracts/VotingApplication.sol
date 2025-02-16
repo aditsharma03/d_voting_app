@@ -32,9 +32,10 @@ contract VotingApplication {
 
 
 
-    function createPoll( bool _realTimeTallying, string[] memory _candidateNames, string[] memory _candidateDescriptions, address[] memory _voters ) public {
+    function createPoll( Poll.PollStruct memory _poll ) public {
         pollCount++;
-        Poll _newPoll = new Poll( _realTimeTallying, _candidateNames, _candidateDescriptions, _voters );
+        Poll _newPoll = new Poll( msg.sender,  _poll );
+        //Poll _newPoll = new Poll();
 
         polls[pollCount] = address(_newPoll);
         emit PollCreated(pollCount, address(_newPoll));
