@@ -8,18 +8,30 @@ contract Poll {
 
     // Describes a candidate
     struct Candidate {
-        uint256 id;
+        string id;
         string name;
         string description;
-        uint256 voteCount;
     }
 
     // Descirbes The configuration required by the constructor to instantiate a new Poll contract
     struct PollStruct {
         string id;
+
         bool realTimeTally;
+
+        bool isStartAutomated;
+        bool isEndAutomated;
+
+        uint256 startTime;
+        uint256 endTime;
+
         Candidate[] candidates;
         address[] eligibleVoters;
+    }
+
+    struct VoteStruct {
+        string candidate_id;
+        uint256 voteCount;
     }
 
 
@@ -33,6 +45,17 @@ contract Poll {
         require( hasVoted[msg.sender] == false, "You can only use this feature once" );
         _;
     }
+    modifier pollActive( uint256 time ) {
+        require( time >= startTime, "This poll has not started yet" );
+        require( time <= endTime, "This poll has already ended" );
+        _;
+    }
+    modifier checkRealtime( uint256 time ){
+        if (!realTimeTally) {
+            require( time > endTime, "Real time tally is currently not available" );
+        } 
+        _;
+    }
 
 
 
@@ -40,23 +63,36 @@ contract Poll {
     address public owner;
 
 
-    //config
+    // config starts here ######################################################################
     string public id;
 
     bool public realTimeTally;
 
+    //bool public isStartAutomated;
+    uint256 public startTime;
+
+    //bool public isEndAutomated;
+    uint256 public endTime;
+
+    // config engs here #######################################################################
+
 
     uint256 public candidateCount;
+    mapping(string => uint256 ) public candidate_id_to_index;
     mapping(uint256 => Candidate) public candidates;
 
 
     mapping( address => bool ) voterEligibility;
     mapping(address => bool) hasVoted;
 
+    
+    mapping( uint256 => uint256 ) votes;
+
 
 
     // Event that is emitted when a vote is successfully cast.
-    event VotedEvent(uint256 indexed candidateId);
+    event VotedEvent(string candidateId);
+    event PollCreated( bool realTimeTally, uint256 startTime, uint256 endTime );
 
 
 
@@ -70,27 +106,64 @@ contract Poll {
 
         realTimeTally = _poll.realTimeTally;
 
-        candidateCount = _poll.candidates.length;
+
+        startTime = 0;
+        endTime = 2**256 -1;
+
+        if( _poll.isStartAutomated ){
+            startTime = _poll.startTime;
+        }
+        if( _poll.isEndAutomated ){
+            endTime = _poll.endTime;
+        }
+
+
+
+        candidateCount = 0;
         for (uint256 i = 0; i < _poll.candidates.length; i++) {
-            candidates[ _poll.candidates[i].id ] = Candidate( _poll.candidates[i].id, _poll.candidates[i].name, _poll.candidates[i].description, _poll.candidates[i].voteCount );
+            candidate_id_to_index[ _poll.candidates[i].id ] = candidateCount;
+            candidates[ candidateCount ] = Candidate( _poll.candidates[i].id, _poll.candidates[i].name, _poll.candidates[i].description );
+            votes[ candidateCount ] = 0;
+            candidateCount++;
         }
         for (uint256 i = 0; i < _poll.eligibleVoters.length; i++) {
             voterEligibility[ _poll.eligibleVoters[i] ] = true;
         }
+
+        emit PollCreated( realTimeTally, startTime, endTime );
+    }
+
+
+
+
+
+    function getResult( uint256 time ) public view checkRealtime(time) returns (VoteStruct[] memory) {
+
+        VoteStruct[] memory temp = new VoteStruct[](candidateCount);
+
+        for (uint256 i = 0; i < candidateCount; i++) {
+            temp[i] =  VoteStruct( candidates[i].id, votes[i] );
+        }
+
+        return temp;
     }
 
 
 
     
-    function voteCandidate( uint256 candidate_id ) public onlyEligible {
+    function voteCandidate( string memory candidate_id, uint256 time ) public pollActive(time) onlyEligible {
 
-        Candidate memory temp = candidates[ candidate_id ];
+        uint256  temp_id = candidate_id_to_index[candidate_id];
 
-        temp.voteCount++;
+        uint256 temp_vote = votes[ temp_id ];
+
+        temp_vote++;
         hasVoted[ msg.sender ] = true;
 
-        candidates[ candidate_id ] = temp;
+        votes[ temp_id ] = temp_vote;
 
+
+        emit VotedEvent(candidate_id);
     }
 
 

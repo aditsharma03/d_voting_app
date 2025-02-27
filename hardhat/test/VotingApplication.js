@@ -11,16 +11,14 @@ const deployContractFixture = async () => {
     const accounts = await ethers.getSigners();
 
     const candidateobj1 = {
-        id: 1,
+        id: "1",
         name: "aniketneg",
         description: "bublu",
-        voteCount: 0
     };
     const candidateobj2 = {
-        id: 2,
+        id: "2",
         name: "kothiyal",
         description: "abhishek",
-        voteCount: 0
     };
 
     const candidates = [candidateobj1, candidateobj2];
@@ -29,12 +27,20 @@ const deployContractFixture = async () => {
     const pollobj1 = {
         id: "uuid1",
         realTimeTally: true,
+        isStartAutomated: false,
+        isEndAutomated: false,
+        startTime: 0,
+        endTime: 0,
         candidates: candidates,
         eligibleVoters: voters
     }
     const pollobj2 = {
         id: "uuid2",
         realTimeTally: true,
+        isStartAutomated: false,
+        isEndAutomated: false,
+        startTime: 0,
+        endTime: 0,
         candidates: candidates,
         eligibleVoters: voters
     }
@@ -49,14 +55,14 @@ const deployContractFixture = async () => {
 
 
 
-describe( "VotingApplication Contract", () => {
-
+describe( "VotingApplication", () => {
 
 
 
 
     it("Should create a poll", async () => {
         const { voting, pollobj1 } = await loadFixture(deployContractFixture);
+
         let poll = await voting.createPoll(pollobj1);
         expect( poll  ).to.not.undefined;
     });
@@ -72,15 +78,12 @@ describe( "VotingApplication Contract", () => {
 
         await voting.createPoll(pollobj1);
 
-        
         const pollCount = Number( await voting.pollCount() );
         expect( pollCount ).to.equal( 1 );
 
+        
         const pollAddress = await voting.polls( pollobj1.id );
-
-
         const poll = await ethers.getContractAt( "Poll", pollAddress );
-
 
         expect( await poll.id() ).to.equals( pollobj1.id );
 
@@ -105,7 +108,6 @@ describe( "VotingApplication Contract", () => {
         const poll1 = await ethers.getContractAt( "Poll", pollAddress1 );
         const poll2 = await ethers.getContractAt( "Poll", pollAddress2 );
 
-
         const owner1 = await poll1.owner();
         const owner2 = await poll2.owner();
 
@@ -121,28 +123,65 @@ describe( "VotingApplication Contract", () => {
 
 
 
-    it( "Should allow voting", async () => {
+    it( "Should allow voting and calculate results correctly ", async () => {
 
         const { voting, candidateobj1, candidateobj2, pollobj1, accounts } = await loadFixture(deployContractFixture);
+        pollobj1.realTimeTally = true;
         await voting.createPoll(pollobj1);
         const pollAddress = await voting.polls( pollobj1.id );
-
         const poll = await ethers.getContractAt( "Poll", pollAddress );
 
+        const d = new Date();
+        
+        await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, d.getTime() );
+        await poll.connect(accounts[2]).voteCandidate( candidateobj1.id, d.getTime()  );
+        await poll.connect(accounts[3]).voteCandidate( candidateobj2.id, d.getTime()  );
 
-        await poll.connect(accounts[1]).voteCandidate( candidateobj1.id );
-        await poll.connect(accounts[2]).voteCandidate( candidateobj1.id );
-        await poll.connect(accounts[3]).voteCandidate( candidateobj2.id );
 
+        const result = await poll.getResult( d.getTime() );
 
-        const voteCount1 = Number( ( await poll.candidates(candidateobj1.id) ).voteCount );
-        const voteCount2 = Number( ( await poll.candidates(candidateobj2.id) ).voteCount ); 
+        const voteCount1 = result[0][1];
+        const voteCount2 = result[1][1];
 
         expect( voteCount1 ).to.equals( 2 );
         expect( voteCount2 ).to.equals( 1 );
 
 
     } )
+
+
+
+
+
+    it( "Should not show result while realTimeTally is set to false", async () => {
+
+        const { voting, candidateobj1, candidateobj2, pollobj1, accounts } = await loadFixture(deployContractFixture);
+        pollobj1.realTimeTally = false;
+        await voting.createPoll(pollobj1);
+        const pollAddress = await voting.polls( pollobj1.id );
+        const poll = await ethers.getContractAt( "Poll", pollAddress );
+
+        const d = new Date();
+        
+        await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, d.getTime() );
+
+        let flag = undefined;
+
+        try{
+            const result = await poll.getResult( d.getTime() );
+            flag = false;
+        }
+        catch{
+            flag = true;
+        }
+
+
+        expect(flag).to.be.true;
+
+    } )
+
+
+
 
 
 
@@ -155,18 +194,18 @@ describe( "VotingApplication Contract", () => {
         const { voting, candidateobj1, pollobj1, accounts } = await loadFixture(deployContractFixture);
         await voting.createPoll(pollobj1);
         const pollAddress = await voting.polls( pollobj1.id );
-
         const poll = await ethers.getContractAt( "Poll", pollAddress );
 
         let flag = undefined;
+        const d = new Date();
 
         try {
             const randomaddress = accounts[6];
-            await poll.connect(randomaddress).voteCandidate( candidateobj1.id );
+            await poll.connect(randomaddress).voteCandidate( candidateobj1.id, d.getTime()  );
             flag = true;
         } 
         catch (error) {
-            console.log(error);
+            
             flag = false;
         }
 
@@ -190,14 +229,15 @@ describe( "VotingApplication Contract", () => {
         const poll = await ethers.getContractAt( "Poll", pollAddress );
 
         let flag = undefined;
+        const d = new Date();
 
         try {
-            await poll.connect(accounts[1]).voteCandidate( candidateobj1.id );
-            await poll.connect(accounts[1]).voteCandidate( candidateobj1.id );
+            await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, d.getTime()  );
+            await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, d.getTime()  );
             flag = true;
         } 
         catch (error) {
-            console.log(error);
+            
             flag = false;
         }
 
@@ -210,6 +250,166 @@ describe( "VotingApplication Contract", () => {
 
     
     
+
+
+
+
+    it( "Should allow automating start time and voting after that time", async () => {
+
+        const { voting, candidateobj1, pollobj1, accounts } = await loadFixture(deployContractFixture);
+
+        const d = new Date();
+        pollobj1.isStartAutomated = true;
+        pollobj1.startTime = d.getTime() + 500;
+
+        await voting.createPoll(pollobj1);
+        const pollAddress = await voting.polls( pollobj1.id );
+        const poll = await ethers.getContractAt( "Poll", pollAddress );
+
+
+        const startTime = await poll.startTime();
+        expect( startTime ).to.equal( pollobj1.startTime );
+
+        let flag = undefined;
+        let p = new Promise( ( resolve ) => {
+
+            setTimeout(async ()=>{
+                try {
+                    const dd = new Date();
+                    await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, dd.getTime()  );
+                    resolve(true);
+                } 
+                catch (error) {
+                    console.log(error);
+                    resolve(false);
+                }
+            }, 1200 );
+        } )
+
+
+        flag = await p;
+        expect( flag ).to.true;
+    } )
+
+
+    
+    
+
+
+
+    it( "Should not allow voting before start time", async () => {
+
+        const { voting, candidateobj1, pollobj1, accounts } = await loadFixture(deployContractFixture);
+
+        const d = new Date();
+        pollobj1.isStartAutomated = true;
+        pollobj1.startTime = d.getTime() + 1000;
+
+        await voting.createPoll(pollobj1);
+        const pollAddress = await voting.polls( pollobj1.id );
+        const poll = await ethers.getContractAt( "Poll", pollAddress );
+
+        let flag = false;
+        let p = new Promise( ( resolve ) => {
+
+            setTimeout(async ()=>{
+                try {
+                    await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, d.getTime()  );
+                    resolve(true);
+                }
+                catch (error) {
+                    resolve(false);
+                }
+            }, 1200 );
+        } )
+
+        flag = await p;
+
+        expect( flag ).to.false;
+
+
+    } )
+
+
+
+
+
+    it( "Should allow automating end time and voting before that time", async () => {
+
+        const { voting, candidateobj1, pollobj1, accounts } = await loadFixture(deployContractFixture);
+
+        const d = new Date();
+        pollobj1.isEndAutomated = true;
+        pollobj1.endTime = d.getTime() + 1000;
+
+        await voting.createPoll(pollobj1);
+        const pollAddress = await voting.polls( pollobj1.id );
+        const poll = await ethers.getContractAt( "Poll", pollAddress );
+
+
+        let flag = undefined;
+        let p = new Promise( ( resolve ) => {
+
+            setTimeout(async ()=>{
+                try {
+                    await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, d.getTime()  );
+                    resolve(true);
+                } 
+                catch (error) {
+                    console.log(error);
+                    resolve(false);
+                }
+            }, 100 );
+        } )
+
+
+        flag = await p;
+        expect( flag ).to.true;
+    } )
+
+
+    
+    
+
+
+
+    it( "Should not allow voting after end time", async () => {
+
+        const { voting, candidateobj1, pollobj1, accounts } = await loadFixture(deployContractFixture);
+
+        const d = new Date();
+        pollobj1.isEndAutomated = true;
+        pollobj1.endTime = d.getTime() + 50;
+
+        await voting.createPoll(pollobj1);
+        const pollAddress = await voting.polls( pollobj1.id );
+        const poll = await ethers.getContractAt( "Poll", pollAddress );
+
+
+        let flag = undefined;
+        let p = new Promise( ( resolve ) => {
+
+            setTimeout(async ()=>{
+                try {
+                    await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, d.getTime()  );
+                    resolve(true);
+                } 
+                catch (error) {
+                    console.log(error);
+                    resolve(false);
+                }
+            }, 100 );
+        } )
+
+
+        flag = await p;
+        expect( flag ).to.true;
+    } )
+
+
+
+
+
 
 
 
