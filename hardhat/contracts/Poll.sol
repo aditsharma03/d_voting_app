@@ -85,7 +85,7 @@ contract Poll {
     mapping( address => bool ) voterEligibility;
     mapping(address => bool) hasVoted;
 
-    
+
     mapping( uint256 => uint256 ) votes;
 
 
@@ -108,7 +108,7 @@ contract Poll {
 
 
         startTime = 0;
-        endTime = 2**256 -1;
+        endTime = type(uint256).max;
 
         if( _poll.isStartAutomated ){
             startTime = _poll.startTime;
@@ -137,7 +137,7 @@ contract Poll {
 
 
 
-    function getResult( uint256 time ) public view checkRealtime(time) returns (VoteStruct[] memory) {
+    function getResult( uint256 time ) public view checkRealtime(time) onlyOwner returns (VoteStruct[] memory) {
 
         VoteStruct[] memory temp = new VoteStruct[](candidateCount);
 
@@ -150,7 +150,7 @@ contract Poll {
 
 
 
-    
+
     function voteCandidate( string memory candidate_id, uint256 time ) public pollActive(time) onlyEligible {
 
         uint256  temp_id = candidate_id_to_index[candidate_id];
@@ -169,6 +169,11 @@ contract Poll {
 
 
 
+
+
+    function endPoll( uint256 time  ) public onlyOwner {
+        endTime = time;
+    }
 
 
 

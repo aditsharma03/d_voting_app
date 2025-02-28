@@ -4,6 +4,8 @@ const {loadFixture} = require("@nomicfoundation/hardhat-toolbox/network-helpers"
 
 
 
+const milisecToMin = ( mili ) => mili / 60000;
+
 
 
 const deployContractFixture = async () => {
@@ -71,7 +73,7 @@ describe( "VotingApplication", () => {
 
 
 
-    
+
     it("Should add created poll to the mapping", async () => {
 
         const { voting, pollobj1 } = await loadFixture(deployContractFixture);
@@ -81,7 +83,7 @@ describe( "VotingApplication", () => {
         const pollCount = Number( await voting.pollCount() );
         expect( pollCount ).to.equal( 1 );
 
-        
+
         const pollAddress = await voting.polls( pollobj1.id );
         const poll = await ethers.getContractAt( "Poll", pollAddress );
 
@@ -91,7 +93,7 @@ describe( "VotingApplication", () => {
 
 
 
-    
+
 
     it( "Should set the Poll owner correctly", async () => {
 
@@ -132,13 +134,13 @@ describe( "VotingApplication", () => {
         const poll = await ethers.getContractAt( "Poll", pollAddress );
 
         const d = new Date();
-        
-        await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, d.getTime() );
-        await poll.connect(accounts[2]).voteCandidate( candidateobj1.id, d.getTime()  );
-        await poll.connect(accounts[3]).voteCandidate( candidateobj2.id, d.getTime()  );
+
+        await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, d.getTime()) ;
+        await poll.connect(accounts[2]).voteCandidate( candidateobj1.id, d.getTime())  ;
+        await poll.connect(accounts[3]).voteCandidate( candidateobj2.id, d.getTime())  ;
 
 
-        const result = await poll.getResult( d.getTime() );
+        const result = await poll.getResult( d.getTime()) ;
 
         const voteCount1 = result[0][1];
         const voteCount2 = result[1][1];
@@ -162,13 +164,13 @@ describe( "VotingApplication", () => {
         const poll = await ethers.getContractAt( "Poll", pollAddress );
 
         const d = new Date();
-        
-        await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, d.getTime() );
+
+        await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, d.getTime()) ;
 
         let flag = undefined;
 
         try{
-            const result = await poll.getResult( d.getTime() );
+            const result = await poll.getResult( d.getTime()) ;
             flag = false;
         }
         catch{
@@ -201,11 +203,11 @@ describe( "VotingApplication", () => {
 
         try {
             const randomaddress = accounts[6];
-            await poll.connect(randomaddress).voteCandidate( candidateobj1.id, d.getTime()  );
+            await poll.connect(randomaddress).voteCandidate( candidateobj1.id, d.getTime())  ;
             flag = true;
         } 
         catch (error) {
-            
+
             flag = false;
         }
 
@@ -232,12 +234,12 @@ describe( "VotingApplication", () => {
         const d = new Date();
 
         try {
-            await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, d.getTime()  );
-            await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, d.getTime()  );
+            await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, d.getTime())  ;
+            await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, d.getTime())  ;
             flag = true;
         } 
         catch (error) {
-            
+
             flag = false;
         }
 
@@ -248,8 +250,8 @@ describe( "VotingApplication", () => {
     } )
 
 
-    
-    
+
+
 
 
 
@@ -276,7 +278,7 @@ describe( "VotingApplication", () => {
             setTimeout(async ()=>{
                 try {
                     const dd = new Date();
-                    await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, dd.getTime()  );
+                    await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, dd.getTime())  ;
                     resolve(true);
                 } 
                 catch (error) {
@@ -292,8 +294,8 @@ describe( "VotingApplication", () => {
     } )
 
 
-    
-    
+
+
 
 
 
@@ -314,7 +316,7 @@ describe( "VotingApplication", () => {
 
             setTimeout(async ()=>{
                 try {
-                    await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, d.getTime()  );
+                    await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, d.getTime())  ;
                     resolve(true);
                 }
                 catch (error) {
@@ -352,7 +354,7 @@ describe( "VotingApplication", () => {
 
             setTimeout(async ()=>{
                 try {
-                    await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, d.getTime()  );
+                    await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, d.getTime())  ;
                     resolve(true);
                 } 
                 catch (error) {
@@ -368,8 +370,8 @@ describe( "VotingApplication", () => {
     } )
 
 
-    
-    
+
+
 
 
 
@@ -391,7 +393,7 @@ describe( "VotingApplication", () => {
 
             setTimeout(async ()=>{
                 try {
-                    await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, d.getTime()  );
+                    await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, d.getTime())  ;
                     resolve(true);
                 } 
                 catch (error) {
@@ -409,9 +411,63 @@ describe( "VotingApplication", () => {
 
 
 
+    it( "Should allow manually ending the poll", async () => {
+
+        const { voting, candidateobj1, pollobj1, accounts } = await loadFixture(deployContractFixture);
+
+        await voting.createPoll(pollobj1);
+        const pollAddress = await voting.polls( pollobj1.id );
+        const poll = await ethers.getContractAt( "Poll", pollAddress );
+
+
+        const d = new Date();
+        const endtime = d.getTime();
+
+
+        await poll.endPoll( endtime );
+
+        const f = await poll.endTime();
+
+        expect( Number(f) ).to.be.equal( endtime );
+    } )
 
 
 
+    it( "Should not allow to vote after manually ending the poll", async () => {
+
+        const { voting, candidateobj1, pollobj1, accounts } = await loadFixture(deployContractFixture);
+
+        await voting.createPoll(pollobj1);
+        const pollAddress = await voting.polls( pollobj1.id );
+        const poll = await ethers.getContractAt( "Poll", pollAddress );
+
+
+        const d = new Date();
+        const endtime = d.getTime();
+
+
+        await poll.endPoll( endtime );
+
+        let flag = undefined;
+        let p = new Promise( ( resolve ) => {
+
+            setTimeout(async ()=>{
+                const dd = new Date();
+                try {
+                    await poll.connect(accounts[1]).voteCandidate( candidateobj1.id, dd.getTime())  ;
+                    resolve(false);
+                } 
+                catch (error) {
+                    resolve(true);
+                }
+            }, 100 );
+        } )
+
+
+        flag = await p;
+
+        expect( flag  ).to.be.true;
+    } )
 
 
 
