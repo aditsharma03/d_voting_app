@@ -397,7 +397,6 @@ describe( "VotingApplication", () => {
                     resolve(true);
                 } 
                 catch (error) {
-                    console.log(error);
                     resolve(false);
                 }
             }, 100 );
