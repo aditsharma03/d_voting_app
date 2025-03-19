@@ -8,7 +8,7 @@ import { WalletContext } from "../../contexts/WalletAddressContext";
 const WalletStatus = () => {
 
 
-    const { walletAddress, disconnectWallet } = useContext(WalletContext);
+    const { signer, disconnectWallet } = useContext(WalletContext);
 
 
     return (
@@ -20,7 +20,7 @@ const WalletStatus = () => {
       >
         <div className="mx-8 my-4">
           Wallet Address: <br />
-          {walletAddress}
+          {signer?.getAddress()}
         </div>
         <button
           onClick={disconnectWallet}

@@ -10,9 +10,9 @@ import {
   Route,
   RouterProvider,
 } from "react-router-dom";
-import WalletStatus from "./components/WalletStatus/WalletStatus";
 import MainPage from "./components/MainPage/MainPage";
 import ListPolls from "./components/ListPolls/ListPolls";
+import { JsonRpcSigner } from "ethers";
 
 
 
@@ -26,7 +26,7 @@ function App() {
 
 
 
-  const [walletAddress, setWalletAddress] = useState("");
+  const [signer, setSigner] = useState<JsonRpcSigner>();
 
   const connectMetamaskWallet = async () => {
 
@@ -38,13 +38,12 @@ function App() {
       params: [{ eth_accounts: {} }],
     });
 
-    const signer = await provider.getSigner();
-    const _walletAddress = await signer.getAddress();
-    setWalletAddress(_walletAddress);
+    const _signer = await provider.getSigner();
+    setSigner(_signer);
   };
 
   const disconnectWallet = () => {
-    setWalletAddress("");
+    setSigner(undefined);
   };
 
 
@@ -65,9 +64,9 @@ function App() {
 
 
   return (
-      <WalletContextProvider value={{ walletAddress, connectMetamaskWallet, disconnectWallet }}>
+      <WalletContextProvider value={{ signer, connectMetamaskWallet, disconnectWallet }}>
         <div className="p-2 h-screen w-screen flex flex-col items-center bg-gradient-to-br from-indigo-200 via-indigo-300 to-indigo-400 text-gray-900">
-          {walletAddress == "" ? (
+          {signer == undefined ? (
             <ConnectWallet />
           ) : (
             <RouterProvider router={router} />
