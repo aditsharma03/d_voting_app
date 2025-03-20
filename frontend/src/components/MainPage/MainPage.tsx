@@ -1,8 +1,7 @@
 import { Outlet } from "react-router-dom";
 import WalletStatus from "../WalletStatus/WalletStatus";
 import { useContext } from "react";
-import { WalletContext } from "../../contexts/WalletAddressContext";
-import { ethers } from "ethers";
+import { WalletContext } from "../../contexts/WalletContext";
 
 
 //import deployedaddresses from "../../artifacts/deployed_addresses.json";

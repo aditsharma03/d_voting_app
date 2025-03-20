@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { WalletContext } from "../../contexts/WalletAddressContext";
+import { WalletContext } from "../../contexts/WalletContext";
 
 
 
@@ -8,7 +8,7 @@ import { WalletContext } from "../../contexts/WalletAddressContext";
 const WalletStatus = () => {
 
 
-    const { signer, disconnectWallet } = useContext(WalletContext);
+    const { signerAddress, disconnectWallet } = useContext(WalletContext);
 
 
     return (
@@ -20,7 +20,7 @@ const WalletStatus = () => {
       >
         <div className="mx-8 my-4">
           Wallet Address: <br />
-          {signer?.getAddress()}
+        {signerAddress}
         </div>
         <button
           onClick={disconnectWallet}

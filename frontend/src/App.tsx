@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { useState } from "react";
 
 import "./index.css";
-import { WalletContextProvider } from "./contexts/WalletAddressContext";
+import {WalletContextProvider} from "./contexts/WalletContext.ts"
 import ConnectWallet from "./components/ConnectWallet/ConnectWallet";
 import {
   createBrowserRouter,
@@ -25,13 +25,14 @@ import { JsonRpcSigner } from "ethers";
 function App() {
 
   const [signer, setSigner] = useState<JsonRpcSigner>();
+  const [signerAddress, setSignerAddress] = useState<string|undefined>();
 
 
   const connectMetamaskWallet = async () => {
 
     if (!window.ethereum) return;
 
-    const provider = await new ethers.BrowserProvider(window.ethereum);
+    const provider =  new ethers.BrowserProvider(window.ethereum);
 
     await window.ethereum?.request({
       method: "wallet_requestPermissions",
@@ -40,6 +41,9 @@ function App() {
 
     const _signer = await provider.getSigner();
     setSigner(_signer);
+
+    const _signerAddress = await _signer.getAddress();
+    setSignerAddress(_signerAddress);
   };
 
 
@@ -65,7 +69,7 @@ function App() {
 
 
   return (
-      <WalletContextProvider value={{ signer, connectMetamaskWallet, disconnectWallet }}>
+      <WalletContextProvider value={{ signer, signerAddress, connectMetamaskWallet, disconnectWallet }}>
         <div className="p-2 h-screen w-screen flex flex-col items-center bg-gradient-to-br from-indigo-200 via-indigo-300 to-indigo-400 text-gray-900">
           {signer == undefined ? (
             <ConnectWallet />

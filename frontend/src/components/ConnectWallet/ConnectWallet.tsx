@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { WalletContext } from "../../contexts/WalletAddressContext";
+import { WalletContext } from "../../contexts/WalletContext";
 
 const ConnectWallet = () => {
   const { connectMetamaskWallet } = useContext(WalletContext);

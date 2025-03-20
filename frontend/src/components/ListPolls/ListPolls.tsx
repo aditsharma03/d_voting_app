@@ -1,5 +1,5 @@
 
-function ListPolls() {
+const ListPolls = () => {
   return (
     <div className="w-full h-full bg-pink-400">
       ListPolls
