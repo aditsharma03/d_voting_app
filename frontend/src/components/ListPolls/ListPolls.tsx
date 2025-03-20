@@ -1,7 +1,7 @@
 
 const ListPolls = () => {
   return (
-    <div className="w-full h-full bg-pink-400">
+    <div className="m-2 w-full h-full bg-zinc-50 bg-opacity-65 rounded-lg">
       ListPolls
     </div>
   )

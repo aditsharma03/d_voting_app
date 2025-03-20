@@ -41,7 +41,6 @@ function App() {
 
     const _signer = await provider.getSigner();
     setSigner(_signer);
-
     const _signerAddress = await _signer.getAddress();
     setSignerAddress(_signerAddress);
   };
@@ -70,7 +69,7 @@ function App() {
 
   return (
       <WalletContextProvider value={{ signer, signerAddress, connectMetamaskWallet, disconnectWallet }}>
-        <div className="p-2 h-screen w-screen flex flex-col items-center bg-gradient-to-br from-indigo-200 via-indigo-300 to-indigo-400 text-gray-900">
+        <div className="p-2 h-screen w-screen items-center bg-gradient-to-br from-indigo-200 via-indigo-300 to-indigo-400 text-gray-900">
           {signer == undefined ? (
             <ConnectWallet />
           ) : (

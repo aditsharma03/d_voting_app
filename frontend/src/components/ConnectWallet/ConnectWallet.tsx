@@ -5,12 +5,14 @@ const ConnectWallet = () => {
   const { connectMetamaskWallet } = useContext(WalletContext);
 
   return (
-      <div className="flex items-center justify-center min-h-screen text-center px-4">
-        <div className="bg-gray-100 bg-opacity-95 shadow-2xl p-6 md:p-12 max-w-7xl w-full h-auto flex flex-col justify-between items-center rounded-lg backdrop-blur-md">
-          <h1 className="mb-6 text-3xl md:text-4xl font-semibold text-gray-900">
+      <div className="flex h-full items-center justify-center text-center">
+        <div
+        className="flex h-full md:h-auto md:w-3/5 flex-col gap-8 items-center justify-center 
+                   rounded-lg bg-gray-100 p-8 m-4 shadow-2xl md:p-12">
+          <h1 className="my-2 text-2xl font-bold text-gray-900 md:text-4xl">
             Secure Blockchain Voting
           </h1>
-          <p className="text-gray-800 w-full md:w-3/4 text-lg md:text-xl text-justify font-medium leading-relaxed mt-4">
+          <p className="my-2 w-full text-justify font-medium text-gray-700 tracking-wide ">
             A decentralized, tamper-proof voting system ensuring transparency
             and fairness in elections. Our platform leverages blockchain
             technology to secure votes and maintain integrity. With our
@@ -18,18 +20,18 @@ const ConnectWallet = () => {
             accessibility, and empower citizens to participate in elections with
             confidence and security.
           </p>
-          <ul className="text-gray-800 w-full md:w-3/4 text-lg text-justify flex  justify-center space-x-4 md:space-x-8 mt-6 font-medium">
+          <ul className=" my-2 flex flex-col lg:flex-row items-center justify-center gap-4 text-lg w-full text-justify font-semibold text-gray-400">
             <li className="flex items-center">
-              <span className="mr-2">•</span>Tamper-proof Security
+              Tamper-proof Security
             </li>
             <li className="flex items-center">
-              <span className="mr-2">•</span>Transparent Process
+              Transparent Process
             </li>
             <li className="flex items-center">
-              <span className="mr-2">•</span>Decentralized Network
+              Decentralized Network
             </li>
           </ul>
-          <button onClick={connectMetamaskWallet} className="bg-indigo-700 hover:bg-indigo-800 text-white font-semibold py-3 px-6 md:px-8 shadow-lg text-lg rounded-md mt-8">
+          <button onClick={connectMetamaskWallet} className=" rounded-md bg-indigo-700 px-6 py-3 text-lg font-semibold text-white shadow-lg hover:bg-indigo-800 md:px-8">
             Connect Wallet
           </button>
         </div>
