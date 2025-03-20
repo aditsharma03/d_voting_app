@@ -24,14 +24,14 @@ import { JsonRpcSigner } from "ethers";
 
 function App() {
 
-
-
   const [signer, setSigner] = useState<JsonRpcSigner>();
+
 
   const connectMetamaskWallet = async () => {
 
     if (!window.ethereum) return;
-    const provider = new ethers.BrowserProvider(window.ethereum);
+
+    const provider = await new ethers.BrowserProvider(window.ethereum);
 
     await window.ethereum?.request({
       method: "wallet_requestPermissions",
@@ -41,6 +41,7 @@ function App() {
     const _signer = await provider.getSigner();
     setSigner(_signer);
   };
+
 
   const disconnectWallet = () => {
     setSigner(undefined);

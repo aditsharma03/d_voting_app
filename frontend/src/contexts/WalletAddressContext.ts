@@ -11,7 +11,7 @@ interface WalletContextType {
 
 export const WalletContext = createContext<WalletContextType>({
     signer: undefined,
-    connectMetamaskWallet: async () => {},
+    connectMetamaskWallet:  () => Promise.resolve(),
     disconnectWallet: () => {},
 });
 

@@ -5,10 +5,8 @@ import { WalletContext } from "../../contexts/WalletAddressContext";
 import { ethers } from "ethers";
 
 
-import deployedaddress from "../../deployments/chain-1337/deployed_addresses.json"
-//import votingdata from "../../deployments/chain-1337/artifacts/VotingApplicationModule#VotingApplication.json"
-import {abi} from '../../deployments/chain-1337/artifacts/VotingApplicationModule\#VotingApplication.json';
-
+//import deployedaddresses from "../../artifacts/deployed_addresses.json";
+//import {abi} from "../../artifacts/VotingApplication.json";
 
 
 
@@ -16,8 +14,8 @@ const MainPage = () => {
 
   const {signer} = useContext(WalletContext);
 
-  const VotingApplication =  new ethers.Contract( deployedaddress["VotingApplicationModule#VotingApplication"],
-  abi, signer );
+  //const VotingApplication =  new ethers.Contract( deployedaddresses["VotingApplicationModule#VotingApplication"],
+  //abi, signer );
 
 
     return (
