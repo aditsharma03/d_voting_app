@@ -16,6 +16,7 @@ contract VotingApplication {
 
 
     mapping( string => address ) public polls;
+    mapping( address => string[] ) public pollsByOwners;
 
 
 
@@ -37,11 +38,15 @@ contract VotingApplication {
         pollCount++;
         Poll _newPoll = new Poll( msg.sender,  _poll );
         polls[ _poll.id ] = address(_newPoll);
+        pollsByOwners[ msg.sender ].push( _poll.id );
 
         emit PollCreated(pollCount, address(_newPoll));
     }
 
 
+    function getYourPolls() public view returns (string[] memory) {
+      return pollsByOwners[msg.sender];
+    }
 
 
 
