@@ -13,6 +13,7 @@ import {
 import MainPage from "./components/MainPage/MainPage";
 import ListPolls from "./components/ListPolls/ListPolls";
 import { JsonRpcSigner } from "ethers";
+import NeedWallet from "./components/NeedWallet/NeedWallet.tsx";
 
 
 

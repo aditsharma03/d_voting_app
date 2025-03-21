@@ -42,23 +42,10 @@ const MainPage = () => {
 
 
 
-
-
-  /*
-  const getPollCount =  () => {
-    const x = VotingApplication.pollCount().then((data) => data);
-    return x;
-  };
-  */
-
-
     return (
 
         <div className="h-full w-full flex flex-col items-center">
             <WalletStatus />
-     <div className="h-20 w-20 bg-red-400" >
-        { pollCount }
-      </div> 
             <Outlet />
         </div>
     );
