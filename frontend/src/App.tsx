@@ -1,35 +1,84 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { ethers } from "ethers";
+import { useState } from "react";
+
+import "./index.css";
+import {WalletContextProvider} from "./contexts/WalletContext.ts"
+import ConnectWallet from "./components/ConnectWallet/ConnectWallet";
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Route,
+  RouterProvider,
+} from "react-router-dom";
+import MainPage from "./components/MainPage/MainPage";
+import ListPolls from "./components/ListPolls/ListPolls";
+import { JsonRpcSigner } from "ethers";
+import NeedWallet from "./components/NeedWallet/NeedWallet.tsx";
+
+
+
+
+
+
+
+
 
 function App() {
-    const [count, setCount] = useState(0)
 
-    return (
-        <>
-            <div>
-                <a href="https://vite.dev" target="_blank">
-                    <img src={viteLogo} className="logo" alt="Vite logo" />
-                </a>
-                <a href="https://react.dev" target="_blank">
-                    <img src={reactLogo} className="logo react" alt="React logo" />
-                </a>
-            </div>
-            <h1>Vite + React</h1>
-            <div className="card">
-                <button onClick={() => setCount((count) => count + 1)}>
-                    count is {count}
-                </button>
-                <p>
-                    Edit <code>src/App.tsx</code> and save to test HMR
-                </p>
-            </div>
-            <p className="read-the-docs">
-                Click on the Vite and React logos to learn more
-            </p>
-        </>
-    )
+  const [signer, setSigner] = useState<JsonRpcSigner>();
+  const [signerAddress, setSignerAddress] = useState<string|undefined>();
+
+
+  const connectMetamaskWallet = async () => {
+
+    if (!window.ethereum) return;
+
+    const provider =  new ethers.BrowserProvider(window.ethereum);
+
+    await window.ethereum?.request({
+      method: "wallet_requestPermissions",
+      params: [{ eth_accounts: {} }],
+    });
+
+    const _signer = await provider.getSigner();
+    setSigner(_signer);
+    const _signerAddress = await _signer.getAddress();
+    setSignerAddress(_signerAddress);
+  };
+
+
+  const disconnectWallet = () => {
+    setSigner(undefined);
+  };
+
+
+
+
+
+
+
+
+  const router = createBrowserRouter(
+    createRoutesFromElements(
+      <Route path="/" element=<MainPage />>
+        <Route path="" element=<ListPolls /> />
+      </Route>,
+    ),
+  );
+
+
+
+  return (
+      <WalletContextProvider value={{ signer, signerAddress, connectMetamaskWallet, disconnectWallet }}>
+        <div className="p-2 h-screen w-screen items-center bg-gradient-to-br from-indigo-200 via-indigo-300 to-indigo-400 text-gray-900">
+          {signer == undefined ? (
+            <ConnectWallet />
+          ) : (
+            <RouterProvider router={router} />
+          )}
+        </div>
+      </WalletContextProvider>
+  );
 }
 
-export default App
+export default App;
