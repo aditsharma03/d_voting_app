@@ -3,8 +3,9 @@ import { VotingAppContext } from "../../contexts/VotingAppContext";
 import { Link } from "react-router-dom";
 
 const ListPolls = () => {
-  const { myPolls, createNewPoll } = useContext(VotingAppContext);
+  const { myPolls } = useContext(VotingAppContext);
 
+  
   /*
   const data = [
     "quick brown fox jumps over the lazy dog",
@@ -29,6 +30,7 @@ const ListPolls = () => {
     "quick brown fox jumps over the lazy dog",
   ]
   */
+  
 
   return (
     <div className="m-2 w-full h-full rounded-lg flex flex-col justify-evenly items-center md:gap-4">
@@ -67,7 +69,7 @@ const ListPolls = () => {
                   <td className="px-4 py-2">{index+1}</td>
                   <td className="px-4 py-2">{item}</td>
                   <td className="px-4 py-2 text-center">
-                  <Link  >
+                  <Link to={"#"} >
                     <button className="bg-green-400 font-medium px-4 py-2 rounded hover:bg-green-200">
                       View Poll
                       </button>
