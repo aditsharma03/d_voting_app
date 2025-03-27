@@ -5,7 +5,7 @@ const ConnectWallet = () => {
   const { connectMetamaskWallet } = useContext(WalletContext);
 
   return (
-      <div className="flex h-full items-center justify-center text-center">
+      <div className="flex h-full w-full items-center justify-center text-center">
         <div
         className="flex flex-col  h-full w-full sm:h-5/6 sm:w-5/6 md:h-auto md:w-3/4 lg:w-1/2 gap-8 items-center justify-center 
                  overflow-hidden  rounded-lg bg-gray-100 p-8 shadow-2xl md:p-12">

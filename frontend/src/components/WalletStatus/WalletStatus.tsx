@@ -18,7 +18,7 @@ const WalletStatus = () => {
       </div>
       <button
         onClick={disconnectWallet}
-        className="m-2 h-fit  border-2 text-sm rounded-md border-black bg-green-100 hover:bg-green-200 px-4 py-2"
+        className="m-2 h-fit w-1/2 sm:w-fit  border-2 text-sm rounded-md border-black bg-green-100 hover:bg-green-200 px-4 py-2"
       >
         Disconnect
       </button>
