@@ -8,6 +8,7 @@ import deployedaddresses from "../../artifacts/contract-address.json";
 import {abi} from "../../artifacts/VotingApplication.json";
 import { VotingAppContextProvider } from "../../contexts/VotingAppContext";
 import { PollInterface } from "../CreatePoll/CreatePoll";
+import Ballot from "../Ballot/Ballot";
 
 
 
@@ -16,7 +17,7 @@ const MainPage = () => {
   const {signer, signerAddress} = useContext(WalletContext);
 
   const [totalPollCount, setTotalPollCount] = useState(0);
-  const [poll, setPoll] = useState(undefined);
+  const [pollAddress, setPollAddress] = useState(undefined);
   const [myPolls, setMyPolls] = useState([]);
    
   const navigate = useNavigate();
@@ -64,8 +65,11 @@ const MainPage = () => {
   }
 
   const getPollAddress = async ( id: string ) => {
-    const _poll = await VotingApplication.poll( id );
-    setPoll( _poll );
+    const _poll = await VotingApplication.polls( id );
+    setPollAddress( _poll );
+  }
+  const clearPollAddress = () => {
+    setPollAddress(undefined);
   }
 
 
@@ -73,12 +77,14 @@ const MainPage = () => {
 
 
   return (
-    <VotingAppContextProvider value={{ poll, myPolls, totalPollCount, createNewPoll, getPollAddress }} >
+    <VotingAppContextProvider value={{ pollAddress, myPolls, totalPollCount, createNewPoll, getPollAddress, clearPollAddress }} >
       <div className="h-full w-full flex flex-col items-center">
         {
-          //myPolls + " | " + totalPollCount + " | " + poll
+          //myPolls + " | " + totalPollCount + " | " + pollAddress
         }
-        <Outlet />
+        {
+          ( pollAddress === undefined )? <Outlet />: <Ballot />
+        }
       </div>
     </VotingAppContextProvider>
   );

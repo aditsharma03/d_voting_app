@@ -1,6 +1,7 @@
 import { FormEvent, useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { VotingAppContext } from "../../contexts/VotingAppContext";
+import { WalletContext } from "../../contexts/WalletContext";
 
 interface CandidateInterface {
   id: string;
@@ -20,7 +21,9 @@ export interface PollInterface {
 }
 
 const CreatePoll = () => {
+  const {signerAddress} = useContext(WalletContext);
   const { createNewPoll } = useContext(VotingAppContext);
+
 
   const [pollId, setPollId] = useState<string>("");
   const [realTimeTally, setRealTimeTally] = useState<boolean>(false);
@@ -65,6 +68,7 @@ const CreatePoll = () => {
   const editCandidateHandler = (index: number = -1) => {
     if (index == -1) return;
 
+    setCandidateId(candidates[index].id);
     setCandidateName(candidates[index].name);
     setCandidateDescription(candidates[index].description);
     setIsEdit(index);
@@ -101,7 +105,7 @@ const CreatePoll = () => {
     if(isEndAutomated) _endTime = new Date(endDate).getTime();
 
     const pollobj: PollInterface = {
-      id: pollId,
+      id: pollId + "-" + signerAddress?.slice(-6),
       realTimeTally: realTimeTally,
       isStartAutomated: isStartAutomated,
       isEndAutomated: isEndAutomated,
@@ -115,7 +119,7 @@ const CreatePoll = () => {
   };
 
   return (
-    <div className="max-w-4xl w-full p-6 bg-white shadow-lg rounded-lg">
+    <div className="w-full md:max-w-[80rem] p-6 bg-white shadow-lg rounded-lg">
       <div className="flex flex-col-reverse sm:flex-row sm:justify-between">
         <h2 className="text-2xl font-bold mb-4">Create New Poll</h2>
         <Link to={"/"} className="py-2 text-blue-700 underline">
@@ -131,6 +135,9 @@ const CreatePoll = () => {
             onChange={(e) => setPollId(e.target.value)}
             className="border p-2 w-full rounded-lg"
           />
+          <span className="text-lg font-semibold text-gray-400">
+            {pollId + '-' + signerAddress?.slice(-6)}
+          </span>
         </div>
         <div className="mb-4">
           <label className="flex items-center">
@@ -188,6 +195,7 @@ const CreatePoll = () => {
         <table className="w-full max-h-36 border mt-2">
           <thead>
             <tr>
+              <th className="border p-2">Id</th>
               <th className="border p-2">Name</th>
               <th className="border p-2">Description</th>
               <th className="border p-2">Actions</th>
@@ -199,19 +207,19 @@ const CreatePoll = () => {
                 <td className="border p-2">{candidate.id}</td>
                 <td className="border p-2">{candidate.name}</td>
                 <td className="border p-2">{candidate.description}</td>
-                <td className="border p-2">
-                  <button
+                <td className="border p-2 flex items-center justify-center">
+                  <input
+                    type="button"
                     onClick={() => editCandidateHandler(index)}
-                    className="bg-yellow-500 text-white px-2 py-1 rounded-lg mr-2"
-                  >
-                    Edit
-                  </button>
-                  <button
+                    className="bg-indigo-400 px-2 py-1 rounded-lg mr-2"
+                    value={"Edit"}
+                  />
+                  <input
+                    type="button"
                     onClick={() => deleteCandidateHandler(index)}
-                    className="bg-red-500 text-white px-2 py-1 rounded-lg"
-                  >
-                    Delete
-                  </button>
+                    className="bg-red-400 px-2 py-1 rounded-lg"
+                    value={"Delete"}
+                  />
                 </td>
               </tr>
             ))}
@@ -223,27 +231,27 @@ const CreatePoll = () => {
             value={candidateId}
             onChange={(e) => setCandidateId(e.target.value)}
             placeholder="Candidate Id"
-            className="border p-2 rounded-lg mr-2"
+            className="border p-2 rounded-lg "
           />
           <input
             type="text"
             value={candidateName}
             onChange={(e) => setCandidateName(e.target.value)}
             placeholder="Candidate Name"
-            className="border p-2 rounded-lg mr-2"
+            className="border p-2 rounded-lg "
           />
           <textarea
             value={candidateDescription}
             onChange={(e) => setCandidateDescription(e.target.value)}
             placeholder="Candidate Description"
-            className="border p-2 rounded-lg mr-2"
+            className="border p-2 rounded-lg "
           />
-          <button
+          <input
+            type="button"
             onClick={() => addCandidateHandler()}
             className="bg-blue-500 text-white px-4 py-2 rounded-lg"
-          >
-            Add Candidate{" "}
-          </button>
+            value={"Add Candidate"}
+          />
         </div>
         <h3 className="text-xl font-bold mt-4">Eligible Voters</h3>
         <table className="w-full border mt-2">
@@ -257,13 +265,13 @@ const CreatePoll = () => {
             {voters?.map((voter, index) => (
               <tr key={index}>
                 <td className="border p-2">{voter}</td>
-                <td className="border p-2">
-                  <button
+                <td className="border p-2 flex items-center justify-center">
+                  <input
+                    type="button"
                     onClick={() => deleteVoterHandler(index)}
-                    className="bg-red-500 text-white px-2 py-1 rounded-lg"
-                  >
-                    Delete
-                  </button>
+                    className="bg-red-400 px-2 py-1 rounded-lg"
+                    value={"Delete"}
+                  />
                 </td>
               </tr>
             ))}
@@ -275,17 +283,26 @@ const CreatePoll = () => {
             value={voterAddress}
             onChange={(e) => setVoterAddress(e.target.value)}
             placeholder="Wallet Address"
-            className="border p-2 rounded-lg mr-2"
+            className="border p-2 rounded-lg "
           />
-          <button
+          <input
+            type="button"
             onClick={addVoterHandler}
             className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg"
+            value={"Add Address"}
+            />
+            {
+            //Add Address
+          }
+          <span
+            className="mt-2 flex flex-col gap-2 bg-indigo-100 px-4 py-2 rounded-lg"
           >
-            Add Address
-          </button>
-          <button className="mt-2 bg-zinc-700 text-white px-4 py-2 rounded-lg">
-            Upload from File
-          </button>
+            <span>Upload Addresses from a file</span>
+          <input
+            type="file"
+            />
+          </span>
+            
         </div>
         <div className="p-4 flex items-center justify-center">
           <button

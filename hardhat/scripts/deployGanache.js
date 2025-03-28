@@ -1,6 +1,7 @@
 // This is a script for deploying your contracts. You can adapt it to deploy
 // yours, or create new ones.
 
+const { artifacts } = require("hardhat");
 const path = require("path");
 
 async function main() {
@@ -45,10 +46,15 @@ function saveFrontendFiles(voting) {
   );
 
   const VotingArtifact = artifacts.readArtifactSync("VotingApplication");
+  const PollArtifact = artifacts.readArtifactSync("Poll")
 
   fs.writeFileSync(
     path.join(contractsDir, "VotingApplication.json"),
     JSON.stringify(VotingArtifact, null, 2)
+  );
+  fs.writeFileSync(
+    path.join(contractsDir, "Poll.json"),
+    JSON.stringify(PollArtifact, null, 2)
   );
 }
 
