@@ -3,16 +3,16 @@ import { PollInterface } from "../components/CreatePoll/CreatePoll";
 
 interface VotingAppContextType {
   totalPollCount: number;
-  pollAddress: string | undefined;
-  myPolls: string[];
-  createNewPoll: (_:PollInterface|undefined) => Promise<void>;
+  pollAddress: string;
   getPollAddress: ( _:string ) => Promise<void>;
   clearPollAddress: ()=>void;
+  myPolls: string[];
+  createNewPoll: (_:PollInterface|undefined) => Promise<void>;
 }
 
 const VotingAppContext = createContext<VotingAppContextType>({
     totalPollCount: 0,
-    pollAddress: undefined,
+    pollAddress: "",
     myPolls: [],
     createNewPoll: (_: PollInterface | undefined) => Promise.resolve(),
     getPollAddress: (_: string) => Promise.resolve(),

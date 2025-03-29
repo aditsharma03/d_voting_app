@@ -17,7 +17,7 @@ const MainPage = () => {
   const {signer, signerAddress} = useContext(WalletContext);
 
   const [totalPollCount, setTotalPollCount] = useState(0);
-  const [pollAddress, setPollAddress] = useState(undefined);
+  const [pollAddress, setPollAddress] = useState("");
   const [myPolls, setMyPolls] = useState([]);
    
   const navigate = useNavigate();
@@ -48,7 +48,7 @@ const MainPage = () => {
       getPolls();
     } 
 
-    const x = setInterval( handlerFunction, 2000 );
+    const x = setInterval( handlerFunction, 1000 );
     handlerFunction();
     return ()=>clearInterval(x)
   }, [signer, signerAddress, VotingApplication]);
@@ -65,11 +65,16 @@ const MainPage = () => {
   }
 
   const getPollAddress = async ( id: string ) => {
+    try{
     const _poll = await VotingApplication.polls( id );
     setPollAddress( _poll );
+    }
+    catch(error){
+      console.log(error);
+    }
   }
   const clearPollAddress = () => {
-    setPollAddress(undefined);
+    setPollAddress("");
   }
 
 
@@ -83,7 +88,7 @@ const MainPage = () => {
           //myPolls + " | " + totalPollCount + " | " + pollAddress
         }
         {
-          ( pollAddress === undefined )? <Outlet />: <Ballot />
+          ( pollAddress === "" )? <Outlet />: <Ballot />
         }
       </div>
     </VotingAppContextProvider>

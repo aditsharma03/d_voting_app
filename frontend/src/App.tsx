@@ -15,7 +15,6 @@ import ListPolls from "./components/ListPolls/ListPolls";
 import { JsonRpcSigner } from "ethers";
 import CreatePoll from "./components/CreatePoll/CreatePoll.tsx";
 import WalletStatus from "./components/WalletStatus/WalletStatus.tsx";
-import Ballot from "./components/Ballot/Ballot.tsx";
 
 
 

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { VotingAppContext } from "../../contexts/VotingAppContext";
 import { WalletContext } from "../../contexts/WalletContext";
 
-interface CandidateInterface {
+export interface CandidateInterface {
   id: string;
   name: string;
   description: string;
@@ -120,10 +120,12 @@ const CreatePoll = () => {
 
   return (
     <div className="w-full md:max-w-[80rem] p-6 bg-white shadow-lg rounded-lg">
-      <div className="flex flex-col-reverse sm:flex-row sm:justify-between">
+      <div className="flex items-start sm:items-center flex-col-reverse sm:flex-row sm:justify-between">
         <h2 className="text-2xl font-bold mb-4">Create New Poll</h2>
         <Link to={"/"} className="py-2 text-blue-700 underline">
-          go back
+          <button className="p-2 max-w-52  bg-blue-600 text-white rounded-lg">
+            go back
+          </button>
         </Link>
       </div>
       <form onSubmit={(e) => submitHandler(e)}>
@@ -136,7 +138,7 @@ const CreatePoll = () => {
             className="border p-2 w-full rounded-lg"
           />
           <span className="text-lg font-semibold text-gray-400">
-            {pollId + '-' + signerAddress?.slice(-6)}
+            {pollId + "-" + signerAddress?.slice(-6)}
           </span>
         </div>
         <div className="mb-4">
@@ -290,19 +292,14 @@ const CreatePoll = () => {
             onClick={addVoterHandler}
             className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg"
             value={"Add Address"}
-            />
-            {
+          />
+          {
             //Add Address
           }
-          <span
-            className="mt-2 flex flex-col gap-2 bg-indigo-100 px-4 py-2 rounded-lg"
-          >
+          <span className="mt-2 flex flex-col gap-2 bg-indigo-100 px-4 py-2 rounded-lg">
             <span>Upload Addresses from a file</span>
-          <input
-            type="file"
-            />
+            <input type="file" />
           </span>
-            
         </div>
         <div className="p-4 flex items-center justify-center">
           <button
