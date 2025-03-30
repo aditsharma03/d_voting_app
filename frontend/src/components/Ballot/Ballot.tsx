@@ -108,22 +108,16 @@ const Ballot = () => {
 
   useEffect( ()=>{
 
-    const getEndTime = async () => {
+
+    const updateHasEnded = async () => {
       const _endTime = await Poll.endTime();
       setEndTime(_endTime);
+      setHasEnded( _endTime < (new Date().getTime()) )
     }
-    getEndTime();
-
-    const updateHasEnded = () => {
-      getEndTime();
-      if( endTime ){
-       setHasEnded( endTime < (new Date().getTime()) )
-      }
-    }
+    updateHasEnded();
 
     const getResult = async () => {
 
-      updateHasEnded();
       const _result = await Poll.getResult( (new Date).getTime() )
       setResult(_result);
 
@@ -137,12 +131,15 @@ const Ballot = () => {
     }
 
     const x = setInterval( ()=>{
+      updateHasEnded();
       if( hasEnded || realTimeTally ){
         getResult();
       }
+      /*
       if( hasEnded ){
         clearInterval(x);
       }
+      */
     }, 1000 )
 
 
@@ -151,7 +148,9 @@ const Ballot = () => {
   }, [Poll, result, hasEnded, realTimeTally, endTime] )
 
 
-
+  const endPoll = async () => {
+     await Poll.endPoll( new Date().getTime() )
+  }
 
 
 
@@ -181,6 +180,7 @@ const Ballot = () => {
                   <div>realTimeTally: <span className="font-semibold py-2 px-4 bg-indigo-100" >{realTimeTally.toString()}</span></div>
                   <div>startTime: <span className="font-semibold py-2 px-4 bg-indigo-100" >{startTime}</span></div>
                   <div>endTime: <span className="font-semibold py-2 px-4 bg-indigo-100" >{endTime}</span></div>
+                  <div>hadEnded: <span className="font-semibold py-2 px-4 bg-indigo-100" >{hasEnded.toString()}</span></div>
                   <div>candidateCount: <span className="font-semibold py-2 px-4 bg-indigo-100" >{candidateCount}</span></div>
                   <div>result: 
                     <div>
@@ -207,7 +207,7 @@ const Ballot = () => {
                     !hasEnded && (
                     <div>
                         <button
-                          onClick={async () => await Poll.endPoll( new Date().getTime() )}
+                          onClick={endPoll}
                           className="my-8 py-2 px-4 bg-red-200 text-red-600 border-2 border-red-500 rounded-md"
                         >End Poll</button>
                         
