@@ -1,25 +1,31 @@
-import { Outlet } from "react-router-dom";
-import WalletStatus from "../WalletStatus/WalletStatus";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { WalletContext } from "../../contexts/WalletContext";
 import { ethers } from "ethers";
 
 
-import deployedaddresses from "../../artifacts/deployed_addresses.json";
+import deployedaddresses from "../../artifacts/contract-address.json";
 import {abi} from "../../artifacts/VotingApplication.json";
+import { VotingAppContextProvider } from "../../contexts/VotingAppContext";
+import { PollInterface } from "../CreatePoll/CreatePoll";
+import Ballot from "../Ballot/Ballot";
 
 
 
 const MainPage = () => {
 
-  const {signer} = useContext(WalletContext);
-  const [pollCount, setPollCount] = useState(9999);
+  const {signer, signerAddress} = useContext(WalletContext);
+
+  const [totalPollCount, setTotalPollCount] = useState(0);
+  const [pollAddress, setPollAddress] = useState("");
+  const [myPolls, setMyPolls] = useState([]);
    
+  const navigate = useNavigate();
 
 
   const VotingApplication = useMemo(() => {
     return new ethers.Contract(
-      deployedaddresses["VotingApplicationModule#VotingApplication"],
+      deployedaddresses["VotingApplication"],
       abi,
       signer,
     );
@@ -28,27 +34,65 @@ const MainPage = () => {
 
 
   useEffect(() => {
-    const x = setInterval(() => {
-      const getPollCount = async () => {
-        const _pollCount = await VotingApplication.pollCount();
-        setPollCount(_pollCount);
+    const handlerFunction = () => {
+      const getTotalPollCount = async () => {
+        const _totalPollCount = await VotingApplication.pollCount();
+        setTotalPollCount(_totalPollCount);
+      }
+      getTotalPollCount();
+
+      const getPolls = async ()=>{
+        const _myPolls = await VotingApplication.getYourPolls();
+        setMyPolls(_myPolls);
       };
-      getPollCount();
-    }, 10000);
+      getPolls();
+    } 
+
+    const x = setInterval( handlerFunction, 1000 );
+    handlerFunction();
     return ()=>clearInterval(x)
-  }, [signer, VotingApplication]);
+  }, [signer, signerAddress, VotingApplication]);
+
+
+
+  const createNewPoll = async ( pollobj: PollInterface|undefined ) => {
+    if( pollobj === undefined ) return;
+
+    const txn = await VotingApplication.createPoll(pollobj);
+    console.log(txn);
+    navigate("/");
+    
+  }
+
+  const getPollAddress = async ( id: string ) => {
+    try{
+    const _poll = await VotingApplication.polls( id );
+    setPollAddress( _poll );
+    }
+    catch(error){
+      console.log(error);
+    }
+  }
+  const clearPollAddress = () => {
+    setPollAddress("");
+  }
 
 
 
 
 
-    return (
-
-        <div className="h-full w-full flex flex-col items-center">
-            <WalletStatus />
-            <Outlet />
-        </div>
-    );
+  return (
+    <VotingAppContextProvider value={{ pollAddress, myPolls, totalPollCount, createNewPoll, getPollAddress, clearPollAddress }} >
+      <div className="h-full w-full flex flex-col items-center">
+        {
+          //myPolls + " | " + totalPollCount + " | " + pollAddress
+        }
+        {
+          ( pollAddress === "" )? <Outlet />: <Ballot />
+        }
+      </div>
+    </VotingAppContextProvider>
+  );
 }
 
 

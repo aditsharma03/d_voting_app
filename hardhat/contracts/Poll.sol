@@ -178,6 +178,13 @@ contract Poll {
 
 
 
+    function checkEligibility() public view returns (bool ){
+        return voterEligibility[msg.sender];
+    }
+    function checkAlreadyVoted() public view returns (bool ){
+        return hasVoted[msg.sender];
+    }
+
 
 
 

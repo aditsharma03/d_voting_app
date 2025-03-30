@@ -3,7 +3,7 @@ import { createContext } from "react";
 
 interface WalletContextType {
   signer: JsonRpcSigner | undefined;
-  signerAddress: string|undefined,
+  signerAddress: string | undefined;
   connectMetamaskWallet: () => Promise<void>;
   disconnectWallet: () => void;
 }
@@ -17,4 +17,4 @@ const WalletContext = createContext<WalletContextType>({
 
 const WalletContextProvider = WalletContext.Provider;
 
-export  { WalletContext, WalletContextProvider };
+export { WalletContext, WalletContextProvider };

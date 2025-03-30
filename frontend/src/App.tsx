@@ -13,7 +13,8 @@ import {
 import MainPage from "./components/MainPage/MainPage";
 import ListPolls from "./components/ListPolls/ListPolls";
 import { JsonRpcSigner } from "ethers";
-import NeedWallet from "./components/NeedWallet/NeedWallet.tsx";
+import CreatePoll from "./components/CreatePoll/CreatePoll.tsx";
+import WalletStatus from "./components/WalletStatus/WalletStatus.tsx";
 
 
 
@@ -62,6 +63,7 @@ function App() {
     createRoutesFromElements(
       <Route path="/" element=<MainPage />>
         <Route path="" element=<ListPolls /> />
+        <Route path="createpoll" element=<CreatePoll /> />
       </Route>,
     ),
   );
@@ -69,15 +71,22 @@ function App() {
 
 
   return (
-      <WalletContextProvider value={{ signer, signerAddress, connectMetamaskWallet, disconnectWallet }}>
-        <div className="p-2 h-screen w-screen items-center bg-gradient-to-br from-indigo-200 via-indigo-300 to-indigo-400 text-gray-900">
-          {signer == undefined ? (
-            <ConnectWallet />
-          ) : (
+    <WalletContextProvider
+      value={{ signer, signerAddress, connectMetamaskWallet, disconnectWallet }}
+    >
+      <div className="p-2 md:p-6 min-h-dvh w-dvw overflow-scroll  bg-gradient-to-br from-indigo-200 via-indigo-300 to-indigo-400 text-gray-900">
+      {signer == undefined ? (
+        <ConnectWallet />
+      ) : (
+        <>
+          <WalletStatus />
+          <div className="p-4 w-full h-full flex flex-col justify-center items-center">
             <RouterProvider router={router} />
-          )}
-        </div>
-      </WalletContextProvider>
+          </div>
+        </>
+      )}
+      </div>
+    </WalletContextProvider>
   );
 }
 

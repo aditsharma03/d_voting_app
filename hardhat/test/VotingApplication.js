@@ -4,7 +4,6 @@ const {loadFixture} = require("@nomicfoundation/hardhat-toolbox/network-helpers"
 
 
 
-const milisecToMin = ( mili ) => mili / 60000;
 
 
 
@@ -119,6 +118,19 @@ describe( "VotingApplication", () => {
 
     } )
 
+    it( "Should map the owners address to created polls correctly", async () => {
+
+        const { accounts, voting, pollobj1,  } = await loadFixture(
+          deployContractFixture
+        );
+
+        await voting.connect(accounts[1]).createPoll(pollobj1);
+
+        const ids= await voting.connect(accounts[1]).getYourPolls();
+
+        expect(ids[0]).to.equals(pollobj1.id);
+
+    } )
 
 
 
