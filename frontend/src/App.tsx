@@ -15,6 +15,7 @@ import ListPolls from "./components/ListPolls/ListPolls";
 import { JsonRpcSigner } from "ethers";
 import CreatePoll from "./components/CreatePoll/CreatePoll.tsx";
 import WalletStatus from "./components/WalletStatus/WalletStatus.tsx";
+import AuthContainer from "./components/AuthContainer/AuthContainer.tsx";
 
 
 
@@ -76,7 +77,8 @@ function App() {
     >
       <div className="p-2 md:p-6 min-h-dvh w-dvw overflow-scroll  bg-gradient-to-br from-indigo-200 via-indigo-300 to-indigo-400 text-gray-900">
       {signer == undefined ? (
-        <ConnectWallet />
+        //<ConnectWallet />
+        <AuthContainer />
       ) : (
         <>
           <WalletStatus />
