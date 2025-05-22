@@ -9,6 +9,8 @@ import {abi} from "../../artifacts/VotingApplication.json";
 import { VotingAppContextProvider } from "../../contexts/VotingAppContext";
 import { PollInterface } from "../CreatePoll/CreatePoll";
 import Ballot from "../Ballot/Ballot";
+import { useAuthContext } from "../../contexts/AuthContext";
+import AuthContainer from "../AuthContainer/AuthContainer";
 
 
 
@@ -78,7 +80,11 @@ const MainPage = () => {
   }
 
 
+  const {token, isFaceSame} = useAuthContext();
 
+  if( !token || !isFaceSame ){
+    return <AuthContainer />
+  }
 
 
   return (

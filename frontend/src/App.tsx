@@ -16,6 +16,7 @@ import { JsonRpcSigner } from "ethers";
 import CreatePoll from "./components/CreatePoll/CreatePoll.tsx";
 import WalletStatus from "./components/WalletStatus/WalletStatus.tsx";
 import AuthContainer from "./components/AuthContainer/AuthContainer.tsx";
+import { useAuthContext } from "./contexts/AuthContext.tsx";
 
 
 
@@ -70,15 +71,26 @@ function App() {
   );
 
 
+  const {token, isFaceSame} = useAuthContext();
+
+  if( !token || !isFaceSame ){
+    return (
+      <div className="p-2 md:p-6 min-h-dvh w-dvw overflow-scroll  bg-gradient-to-br from-indigo-200 via-indigo-300 to-indigo-400 text-gray-900">
+    <AuthContainer />
+    </div>
+    )
+
+  }
+
 
   return (
     <WalletContextProvider
       value={{ signer, signerAddress, connectMetamaskWallet, disconnectWallet }}
     >
       <div className="p-2 md:p-6 min-h-dvh w-dvw overflow-scroll  bg-gradient-to-br from-indigo-200 via-indigo-300 to-indigo-400 text-gray-900">
-      {signer == undefined ? (
-        //<ConnectWallet />
-        <AuthContainer />
+      {signer === undefined ? (
+        <ConnectWallet />
+        //<AuthContainer />
       ) : (
         <>
           <WalletStatus />
