@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import WebcamCapture from '../WebcamCapture/WebcamCapture';
 
-const SignIn = ({ onSignIn, onSwitchToSignUp }) => {
+const SignIn = ({ onSignIn, onSwitchToSignUp }: any) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [biometricImage, setBiometricImage] = useState(null);
+  const [biometricImageDescriptor, setBiometricImageDescriptor] = useState(null);
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     
     if (!email || !password) {
@@ -15,13 +15,13 @@ const SignIn = ({ onSignIn, onSwitchToSignUp }) => {
       return;
     }
     
-    if (!biometricImage) {
+    if (!biometricImageDescriptor) {
       setError('Please complete biometric verification');
       return;
     }
     
     setError('');
-    onSignIn({ email, password, biometricImage });
+    onSignIn({ email, password, biometricImageDescriptor });
   };
 
   return (
@@ -64,7 +64,7 @@ const SignIn = ({ onSignIn, onSwitchToSignUp }) => {
         </div>
         
         <div className='flex justify-center items-center'>
-        <WebcamCapture img={biometricImage} setImg={setBiometricImage}/>
+        <WebcamCapture  setImgDescriptor={setBiometricImageDescriptor}/>
         </div>
         
         <button

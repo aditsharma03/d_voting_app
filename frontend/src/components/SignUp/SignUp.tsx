@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import WebcamCapture from '../WebcamCapture/WebcamCapture';
 
-const SignUp = ({ onSignUp, onSwitchToSignIn }) => {
+const SignUp = ({ onSignUp, onSwitchToSignIn }: any) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [biometricImage, setBiometricImage] = useState(null);
+  const [biometricImageDescriptor, setBiometricImageDescriptor] = useState(null);
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     
     if (!name || !email || !password || !confirmPassword) {
@@ -22,13 +22,13 @@ const SignUp = ({ onSignUp, onSwitchToSignIn }) => {
       return;
     }
     
-    if (!biometricImage) {
+    if (!biometricImageDescriptor) {
       setError('Please complete biometric verification');
       return;
     }
     
     setError('');
-    onSignUp({ name, email, password, biometricImage });
+    onSignUp({ name, email, password, biometricImageDescriptor });
   };
 
   return (
@@ -98,7 +98,7 @@ const SignUp = ({ onSignUp, onSwitchToSignIn }) => {
           />
         </div>
         
-        <WebcamCapture img={biometricImage} setImg={setBiometricImage}/>
+        <WebcamCapture setImgDescriptor={setBiometricImageDescriptor}/>
         
         <button
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mt-4"

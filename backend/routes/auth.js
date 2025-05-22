@@ -1,23 +1,13 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const { body, validationResult } = require("express-validator");
-var fetchuser = require("../middleware/fetchuser");
-var jwt = require("jsonwebtoken");
-const User = require("../models/User").default;
+const fetchuser = require("../middleware/fetchuser");
+const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
 
-//import * as canvas from 'canvas';
-//import * as faceapi from 'face-api.js';
-//const { Canvas, Image, ImageData } = canvas
-//faceapi.env.monkeyPatch({ Canvas, Image, ImageData })
-//faceapi.env.monkeyPatch({
-//Canvas: HTMLCanvasElement,
-//Image: HTMLImageElement,
-//ImageData: ImageData,
-//Video: HTMLVideoElement,
-//createCanvasElement: () => document.createElement('canvas'),
-//createImageElement: () => document.createElement('img')
-//})
+
+const faceapi = require("face-api.js")
 
 
 
@@ -70,8 +60,7 @@ router.post( "/signup",
       res.json({ authToken });
     } 
     catch (error) {
-      console.error(error.message);
-      res.status(500).send("Some error occurred");
+      res.status(500).send(error);
     }
   },
 );
@@ -99,14 +88,17 @@ router.post( "/signin",
       const passcompare = await bcrypt.compare(password, user.password);
 
       //Compare Face Descriptors
-      try{
-        //const faceMatcher = new faceapi.FaceMatcher(user.descriptor);
-        //const match = faceMatcher.findBestMatch(descriptor);
-        //if( match.label === "unknown" ) throw new Error("Face do not match");
-      }
-      catch( err ){
-        return res.status(400).json(err);
-      }
+      const faceMatcher = new faceapi.FaceMatcher(descriptor);
+
+      Promise.all([
+        faceapi.nets.ssdMobilenetv1.loadFromUri("/models"),
+        faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
+        faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
+      ]).then(() => {
+              const match = faceMatcher.findBestMatch(user.faceDescriptor.descriptor);
+              console.log(match);
+            })
+            .catch((err) => console.log(err));
 
       if (!passcompare) {
         return res .status(400) .json({ error: "Please try to Login with correct credentials" });
@@ -122,8 +114,8 @@ router.post( "/signin",
       res.json({ authToken });
     }
     catch (error) {
-      console.error(error.message);
-      res.status(500).send("Some error occurred");
+      console.log(error);
+      res.status(500).send(error);
     }
   },
 );
@@ -132,12 +124,11 @@ router.post( "/signin",
 router.post("/getuser", fetchuser, async (req, res) => {
   try {
     const userId = req.user.id;
-    const user = await User.findById(userId).select("-password -descriptor");
+    const user = await User.findById(userId).select("-password");
     res.send(user);
   }
   catch (error) {
-    console.error(error.message);
-    res.status(500).send("Internal error ...");
+    res.status(500).send(error);
   }
 });
 module.exports = router;
