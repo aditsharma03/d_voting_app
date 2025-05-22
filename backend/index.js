@@ -1,3 +1,5 @@
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 require("dotenv").config();
 const cors = require("cors");
 const express = require("express");
