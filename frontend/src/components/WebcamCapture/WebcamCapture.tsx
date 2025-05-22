@@ -47,6 +47,7 @@ function WebcamCapture({ setImgDescriptor}: any) {
             .withFaceDescriptor()
             .then((_result) => {
               console.log(_result);
+              console.log(typeof _result)
               setImgDescriptor(_result);
               return _result;
             })

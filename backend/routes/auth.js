@@ -69,14 +69,14 @@ router.post( "/signup",
 router.post( "/signin",
   [
     body("email", "Enter a valid email").isEmail(),
-    body("password", "Password cannot be blank").exists(),
+    body("password", "Password cannot be blank").notEmpty(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const { email, password, descriptor } = req.body;
+    const { email, password  } = req.body;
 
     try {
       let user = await User.findOne({ email: email });
@@ -88,17 +88,17 @@ router.post( "/signin",
       const passcompare = await bcrypt.compare(password, user.password);
 
       //Compare Face Descriptors
-      const faceMatcher = new faceapi.FaceMatcher(descriptor);
+      //const faceMatcher = new faceapi.FaceMatcher(descriptor);
 
-      Promise.all([
-        faceapi.nets.ssdMobilenetv1.loadFromUri("/models"),
-        faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
-        faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
-      ]).then(() => {
-              const match = faceMatcher.findBestMatch(user.faceDescriptor.descriptor);
-              console.log(match);
-            })
-            .catch((err) => console.log(err));
+      //Promise.all([
+      //  faceapi.nets.ssdMobilenetv1.loadFromUri("/models"),
+      //  faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
+      //  faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
+      //]).then(() => {
+      //        const match = faceMatcher.findBestMatch(user.faceDescriptor.descriptor);
+      //        console.log(match);
+      //      })
+      //      .catch((err) => console.log(err));
 
       if (!passcompare) {
         return res .status(400) .json({ error: "Please try to Login with correct credentials" });
@@ -111,7 +111,10 @@ router.post( "/signin",
         },
       };
       const authToken = jwt.sign(data, JWT_SECRET);
-      res.json({ authToken });
+      res.json({ 
+        "authToken": authToken,
+        "descriptor": user.faceDescriptor
+      });
     }
     catch (error) {
       console.log(error);
