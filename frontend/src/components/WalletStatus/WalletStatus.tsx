@@ -1,8 +1,11 @@
 import { useContext } from "react";
 import { WalletContext } from "../../contexts/WalletContext";
+import { useAuthContext } from "../../contexts/AuthContext";
 
 const WalletStatus = () => {
   const { signerAddress, disconnectWallet } = useContext(WalletContext);
+
+  const {handleLogout} = useAuthContext();
 
   return (
     <div
@@ -21,6 +24,12 @@ const WalletStatus = () => {
         className="m-2 h-fit w-1/2 sm:w-fit  border-2 text-sm rounded-md border-black bg-green-100 hover:bg-green-200 px-4 py-2"
       >
         Disconnect
+      </button>
+      <button
+        onClick={() => { disconnectWallet(), handleLogout() }}
+        className="m-2 h-fit w-1/2 sm:w-fit  border-2 text-sm rounded-md border-black bg-red-200 hover:bg-green-200 px-4 py-2"
+      >
+        Logout
       </button>
     </div>
   );

@@ -1,8 +1,11 @@
 import { useContext } from "react";
 import { WalletContext } from "../../contexts/WalletContext";
+import { useAuthContext } from "../../contexts/AuthContext";
 
 const ConnectWallet = () => {
   const { connectMetamaskWallet } = useContext(WalletContext);
+
+  const {handleLogout} = useAuthContext();
 
   return (
       <div className="flex h-full w-full items-center justify-center text-center">
@@ -31,9 +34,14 @@ const ConnectWallet = () => {
               Decentralized Network
             </li>
           </ul>
+        <div className="flex gap-4">
           <button onClick={connectMetamaskWallet} className=" rounded-md bg-indigo-700 px-6 py-3 text-lg font-semibold text-white shadow-lg hover:bg-indigo-800 md:px-8">
             Connect Wallet
           </button>
+          <button onClick={handleLogout} className=" rounded-md bg-indigo-700 px-6 py-3 text-lg font-semibold text-white shadow-lg hover:bg-indigo-800 md:px-8">
+            Logout
+          </button>
+        </div>
         <a href="https://metamask.io" className="text-blue-800 underline"><span>click here to get metamask wallet</span></a>
         </div>
     </div>

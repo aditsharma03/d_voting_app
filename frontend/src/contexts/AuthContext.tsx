@@ -102,6 +102,8 @@ export const AuthContextProvider = ({children}: any) => {
   };
 
   const handleLogout = () => {
+    setToken("");
+    setIsFaceSame(false);
 
   }
   
